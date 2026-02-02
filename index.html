@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReasonBENCH: Benchmarking the (In)Stability of LLM Reasoning</title>
+  <meta name="description" content="ReasonBENCH is a benchmark suite and open-source library for controlled multi-run evaluation of LLM reasoning, reporting variance-aware metrics for both quality and cost.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="container">
+      <h1>Reason<span>BENCH</span></h1>
+      <h1 style="font-size:1.3rem; font-weight:500; margin-bottom:4px;">Benchmarking the (In)Stability of LLM Reasoning</h1>
+      <p class="venue">Under review at ICML 2025</p>
+
+      <div class="authors">
+        <!-- Replace with real author names -->
+        <span class="author">Author 1 <span class="affiliation">(Affiliation 1)</span></span>
+        <span class="author">Author 2 <span class="affiliation">(Affiliation 2)</span></span>
+        <span class="author">Author 3 <span class="affiliation">(Affiliation 3)</span></span>
+        <span class="author">Author 4 <span class="affiliation">(Affiliation 4)</span></span>
+      </div>
+
+      <nav class="nav-buttons">
+        <a href="assets/reasonbench.pdf" download class="nav-btn primary">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/></svg>
+          Paper
+        </a>
+        <a href="https://anonymous.4open.science/r/ReasonBench-64B3" target="_blank" class="nav-btn outline">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+          Code
+        </a>
+        <a href="#leaderboard" class="nav-btn outline">
+          <svg viewBox="0 0 24 24"><path d="M3 13h2v8H3v-8zm6-6h2v14H9V7zm6-4h2v18h-2V3zm6 8h2v10h-2V11z"/></svg>
+          Leaderboard
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Abstract -->
+  <section id="abstract">
+    <div class="container">
+      <h2 class="section-title">Abstract</h2>
+      <p class="abstract-text">
+        Large language model (LLM) reasoning is typically evaluated using single runs, masking how much performance can vary across repeated executions. This practice obscures both reliability and cost, and can lead to misleading comparisons between reasoning methods and models. We introduce <strong>ReasonBENCH</strong>, a benchmark suite and open-source library for controlled multi-run evaluation of LLM reasoning. For each model&ndash;strategy&ndash;task configuration, we perform repeated trials across 6 diverse benchmarks and report variance-aware metrics for both quality and cost, including confidence intervals and run-to-run variability measures. Using standardized implementations, we benchmark 10 widely used reasoning strategies under identical model conditions and evaluate 10 contemporary reasoning-oriented LLMs in a zero-shot setting. Our results show that run-to-run variability is substantial, benchmark-dependent, and often large enough to change model/method rankings relative to single-run averages. Additional analyses reveal that scaling within a model family improves both average quality and stability, while increasing test-time reasoning effort primarily increases cost without yielding statistically significant quality gains. Together, these findings motivate distribution-aware evaluation practices and provide reproducible tooling to support more reliable progress in LLM reasoning research.
+      </p>
+    </div>
+  </section>
+
+  <!-- Teaser Figure -->
+  <section class="teaser">
+    <div class="container">
+      <div class="teaser-placeholder">
+        <!-- Replace this div with an <img> tag pointing to your Figure 1 -->
+        <p>Add your teaser figure here</p>
+        <p style="margin-top:8px; font-size:0.82rem;">Place the image file in <code>assets/</code> and update this section</p>
+      </div>
+      <p class="teaser-caption">
+        <strong>Figure 1. Instability in LLM Reasoning.</strong> For the same query, different reasoning models and reasoning strategies produce distinct chains of thought and frequently contradictory conclusions. The bottom panel summarizes this variability quantitatively, showing that the relative deviation from average performance across reasoning models and strategies is massive.
+      </p>
+    </div>
+  </section>
+
+  <!-- Key Findings -->
+  <section id="findings">
+    <div class="container">
+      <h2 class="section-title">Key Findings</h2>
+      <p class="section-subtitle">Results from 10 reasoning strategies, 10 models, 6 benchmarks, and 10 independent runs per configuration.</p>
+
+      <div class="findings-grid">
+        <div class="finding-card">
+          <div class="icon">&#x1F3B2;</div>
+          <h3>Variability Changes Rankings</h3>
+          <p>Run-to-run variability is substantial, benchmark-dependent, and often large enough to change model and method rankings relative to single-run averages.</p>
+        </div>
+        <div class="finding-card">
+          <div class="icon">&#x1F4C8;</div>
+          <h3>Scaling Improves Stability</h3>
+          <p>Scaling within a model family (e.g., GPT-4.1 Nano to Mini) improves both average quality and reduces run-to-run variance, leading to more stable reasoning.</p>
+        </div>
+        <div class="finding-card">
+          <div class="icon">&#x1F4B0;</div>
+          <h3>More Thinking &#x2260; Better Quality</h3>
+          <p>Increasing test-time reasoning effort primarily increases cost without yielding statistically significant quality gains, consistent with an inverted U-shaped relationship.</p>
+        </div>
+        <div class="finding-card">
+          <div class="icon">&#x1F3C6;</div>
+          <h3>Best Model = Most Stable</h3>
+          <p>Gemini-3 Flash achieves the highest quality and the lowest run deviation. FoA is the most stable and highest-quality reasoning strategy.</p>
+        </div>
+        <div class="finding-card">
+          <div class="icon">&#x1F50D;</div>
+          <h3>Quality &amp; Cost Stability Decouple</h3>
+          <p>Cost variability does not reliably mirror quality variability. A model can have stable costs but unstable quality, or vice versa.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Leaderboard -->
+  <section id="leaderboard" class="leaderboard-section">
+    <div class="container">
+      <h2 class="section-title">Leaderboard</h2>
+      <p class="section-subtitle">All results report mean and 95% confidence intervals from 10 independent runs. Click column headers to sort.</p>
+
+      <!-- Table 1: Reasoning Strategies -->
+      <div class="table-header">
+        <h3>Reasoning Strategies</h3>
+        <span class="table-note">Base model: GPT-4.1 Nano &middot; 10 runs per configuration</span>
+      </div>
+      <div class="table-wrapper">
+        <table class="leaderboard-table" id="strategies-table">
+          <thead>
+            <tr>
+              <th data-sort="string">Strategy <span class="sort-arrow">&#x25B4;&#x25BE;</span></th>
+              <th data-sort="string">Type <span class="sort-arrow">&#x25B4;&#x25BE;</span></th>
+              <th data-sort="number">Quality Avg <span class="sort-arrow">&#x25B4;&#x25BE;</span></th>
+              <th data-sort="number">Run Deviation <span class="sort-arrow">&#x25B4;&#x25BE;</span></th>
+              <th data-sort="number">Noise (Global) <span class="sort-arrow">&#x25B4;&#x25BE;</span></th>
+              <th data-sort="number">Noise (Run) <span class="sort-arrow">&#x25B4;&#x25BE;</span></th>
+              <th data-sort="number">Cost Avg ($) <span class="sort-arrow">&#x25B4;&#x25BE;</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="strategy-name">IO</td>
+              <td><span class="type-badge direct">Direct</span></td>
+              <td data-value="0.1063">0.1063 <span class="ci">[0.10, 0.12]</span></td>
+              <td data-value="13.66">13.66%</td>
+              <td data-value="0.1957">0.1957</td>
+              <td data-value="0.0153">0.0153</td>
+              <td data-value="0.0054">0.0054</td>
+            </tr>
+            <tr>
+              <td class="strategy-name">CoT</td>
+              <td><span class="type-badge direct">Direct</span></td>
+              <td data-value="0.2761">0.2761 <span class="ci">[0.25, 0.30]</span></td>
+              <td data-value="29.59">29.59%</td>
+              <td data-value="0.6016">0.6016</td>
+              <td data-value="0.0940">0.0940</td>
+              <td data-value="0.0130">0.0130</td>
+            </tr>
+            <tr>
+              <td class="strategy-name">CoT-SC</td>
+              <td><span class="type-badge direct">Direct</span></td>
+              <td data-value="0.2281">0.2281 <span class="ci">[0.21, 0.24]</span></td>
+              <td data-value="65.54" class="worst">65.54%</td>
+              <td data-value="0.3187">0.3187</td>
+              <td data-value="0.0427">0.0427</td>
+              <td data-value="0.0682">0.0682</td>
+            </tr>
+            <tr>
+              <td class="strategy-name">ReAct</td>
+              <td><span class="type-badge adaptive">Adaptive</span></td>
+              <td data-value="0.2956">0.2956 <span class="ci">[0.28, 0.31]</span></td>
+              <td data-value="29.14">29.14%</td>
+              <td data-value="1.1289">1.1289</td>
+              <td data-value="0.0219">0.0219</td>
+              <td data-value="0.0697">0.0697</td>
+            </tr>
+            <tr>
+              <td class="strategy-name">Reflexion</td>
+              <td><span class="type-badge adaptive">Adaptive</span></td>
+              <td data-value="0.2815">0.2815 <span class="ci">[0.27, 0.30]</span></td>
+              <td data-value="27.75">27.75%</td>
+              <td data-value="1.3080">1.3080</td>
+              <td data-value="0.0413">0.0413</td>
+              <td data-value="0.1647">0.1647</td>
+            </tr>
+            <tr>
+              <td class="strategy-name">ToT-DFS</td>
+              <td><span class="type-badge structured">Structured</span></td>
+              <td data-value="0.1272">0.1272 <span class="ci">[0.10, 0.14]</span></td>
+              <td data-value="5.15" class="best">5.15%</td>
+              <td data-value="1.2396">1.2396</td>
+              <td data-value="0.0353">0.0353</td>
+              <td data-value="0.1033">0.1033</td>
+            </tr>
+            <tr>
+              <td class="strategy-name">ToT-BFS</td>
+              <td><span class="type-badge structured">Structured</span></td>
+              <td data-value="0.4073">0.4073 <span class="ci">[0.38, 0.44]</span></td>
+              <td data-value="14.35">14.35%</td>
+              <td data-value="0.4816">0.4816</td>
+              <td data-value="0.1781" class="worst">0.1781</td>
+              <td data-value="0.4428">0.4428</td>
+            </tr>
+            <tr>
+              <td class="strategy-name">GoT</td>
+              <td><span class="type-badge structured">Structured</span></td>
+              <td data-value="0.3361">0.3361 <span class="ci">[0.31, 0.36]</span></td>
+              <td data-value="15.64">15.64%</td>
+              <td data-value="0.5101">0.5101</td>
+              <td data-value="0.1203">0.1203</td>
+              <td data-value="0.4971">0.4971</td>
+            </tr>
+            <tr>
+              <td class="strategy-name">RAP</td>
+              <td><span class="type-badge planning">Planning</span></td>
+              <td data-value="0.3669">0.3669 <span class="ci">[0.35, 0.38]</span></td>
+              <td data-value="18.54">18.54%</td>
+              <td data-value="1.5461" class="worst">1.5461</td>
+              <td data-value="0.0273">0.0273</td>
+              <td data-value="0.5320">0.5320</td>
+            </tr>
+            <tr>
+              <td class="strategy-name">FoA</td>
+              <td><span class="type-badge evolutionary">Evolutionary</span></td>
+              <td data-value="0.4580" class="best">0.4580 <span class="ci">[0.43, 0.48]</span></td>
+              <td data-value="7.83">7.83%</td>
+              <td data-value="0.4716">0.4716</td>
+              <td data-value="0.1522">0.1522</td>
+              <td data-value="0.3237">0.3237</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Table 2: Reasoning Models -->
+      <div class="table-header">
+        <h3>Reasoning Models</h3>
+        <span class="table-note">Zero-shot evaluation &middot; 10 runs per configuration &middot; Ordered by release date (2025)</span>
+      </div>
+      <div class="table-wrapper">
+        <table class="leaderboard-table" id="models-table">
+          <thead>
+            <tr>
+              <th data-sort="string">Model <span class="sort-arrow">&#x25B4;&#x25BE;</span></th>
+              <th data-sort="string">Provider <span class="sort-arrow">&#x25B4;&#x25BE;</span></th>
+              <th data-sort="number">Quality Avg <span class="sort-arrow">&#x25B4;&#x25BE;</span></th>
+              <th data-sort="number">Run Deviation <span class="sort-arrow">&#x25B4;&#x25BE;</span></th>
+              <th data-sort="number">Noise (Global) <span class="sort-arrow">&#x25B4;&#x25BE;</span></th>
+              <th data-sort="number">Noise (Run) <span class="sort-arrow">&#x25B4;&#x25BE;</span></th>
+              <th data-sort="number">Cost Avg ($) <span class="sort-arrow">&#x25B4;&#x25BE;</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="model-name">DeepSeek R1</td>
+              <td><span class="provider-badge">DeepSeek</span></td>
+              <td data-value="0.2217">0.2217 <span class="ci">[0.20, 0.25]</span></td>
+              <td data-value="17.81">17.81%</td>
+              <td data-value="1.1096" class="worst">1.1096</td>
+              <td data-value="0.0381">0.0381</td>
+              <td data-value="1.3141" class="worst">1.3141</td>
+            </tr>
+            <tr>
+              <td class="model-name">Llama 4 Maverick</td>
+              <td><span class="provider-badge">Meta</span></td>
+              <td data-value="0.4029">0.4029 <span class="ci">[0.38, 0.43]</span></td>
+              <td data-value="8.27">8.27%</td>
+              <td data-value="0.3797">0.3797</td>
+              <td data-value="0.0358">0.0358</td>
+              <td data-value="0.0186">0.0186</td>
+            </tr>
+            <tr>
+              <td class="model-name">GPT-4.1 mini</td>
+              <td><span class="provider-badge">OpenAI</span></td>
+              <td data-value="0.4540">0.4540 <span class="ci">[0.43, 0.48]</span></td>
+              <td data-value="10.74">10.74%</td>
+              <td data-value="0.8653">0.8653</td>
+              <td data-value="0.0205">0.0205</td>
+              <td data-value="0.0145">0.0145</td>
+            </tr>
+            <tr>
+              <td class="model-name">GPT-4.1 nano</td>
+              <td><span class="provider-badge">OpenAI</span></td>
+              <td data-value="0.1063" class="worst">0.1063 <span class="ci">[0.10, 0.12]</span></td>
+              <td data-value="13.66">13.66%</td>
+              <td data-value="0.1957">0.1957</td>
+              <td data-value="0.0153">0.0153</td>
+              <td data-value="0.0054" class="best">0.0054</td>
+            </tr>
+            <tr>
+              <td class="model-name">Qwen3 235B Thinking</td>
+              <td><span class="provider-badge">Alibaba</span></td>
+              <td data-value="0.4124">0.4124 <span class="ci">[0.39, 0.43]</span></td>
+              <td data-value="39.38" class="worst">39.38%</td>
+              <td data-value="0.6612">0.6612</td>
+              <td data-value="0.0301">0.0301</td>
+              <td data-value="0.5366">0.5366</td>
+            </tr>
+            <tr>
+              <td class="model-name">GPT-OSS 120B</td>
+              <td><span class="provider-badge">OpenAI</span></td>
+              <td data-value="0.5025">0.5025 <span class="ci">[0.47, 0.53]</span></td>
+              <td data-value="9.84">9.84%</td>
+              <td data-value="0.1331" class="best">0.1331</td>
+              <td data-value="0.0479">0.0479</td>
+              <td data-value="0.0304">0.0304</td>
+            </tr>
+            <tr>
+              <td class="model-name">GPT-5 mini</td>
+              <td><span class="provider-badge">OpenAI</span></td>
+              <td data-value="0.5644">0.5644 <span class="ci">[0.53, 0.60]</span></td>
+              <td data-value="9.50">9.50%</td>
+              <td data-value="0.2456">0.2456</td>
+              <td data-value="0.0531">0.0531</td>
+              <td data-value="0.1674">0.1674</td>
+            </tr>
+            <tr>
+              <td class="model-name">GPT-5 nano</td>
+              <td><span class="provider-badge">OpenAI</span></td>
+              <td data-value="0.5048">0.5048 <span class="ci">[0.48, 0.52]</span></td>
+              <td data-value="10.78">10.78%</td>
+              <td data-value="0.6089">0.6089</td>
+              <td data-value="0.0348">0.0348</td>
+              <td data-value="0.0591">0.0591</td>
+            </tr>
+            <tr>
+              <td class="model-name">Claude Haiku 4.5</td>
+              <td><span class="provider-badge">Anthropic</span></td>
+              <td data-value="0.3777">0.3777 <span class="ci">[0.36, 0.40]</span></td>
+              <td data-value="11.70">11.70%</td>
+              <td data-value="0.2485">0.2485</td>
+              <td data-value="0.0537" class="worst">0.0537</td>
+              <td data-value="0.1099">0.1099</td>
+            </tr>
+            <tr>
+              <td class="model-name">Gemini 3 Flash</td>
+              <td><span class="provider-badge">Google</span></td>
+              <td data-value="0.7810" class="best">0.7810 <span class="ci">[0.74, 0.78]</span></td>
+              <td data-value="3.48" class="best">3.48%</td>
+              <td data-value="0.2363">0.2363</td>
+              <td data-value="0.0345">0.0345</td>
+              <td data-value="1.0451">1.0451</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="font-size: 0.82rem; color: var(--gray-400); margin-top: -32px;">
+        <span class="best" style="font-size:0.82rem;">Blue</span> = best performance &middot;
+        <span class="worst" style="font-size:0.82rem;">Orange</span> = worst performance &middot;
+        All confidence intervals are at 95% level.
+      </p>
+    </div>
+  </section>
+
+  <!-- BibTeX -->
+  <section class="bibtex-section" id="citation">
+    <div class="container">
+      <h2 class="section-title">Citation</h2>
+      <div class="bibtex-block">
+        <button class="copy-btn">Copy</button>
+<pre>@inproceedings{reasonbench2025,
+  title     = {ReasonBENCH: Benchmarking the (In)Stability of LLM Reasoning},
+  author    = {Anonymous Authors},
+  booktitle = {International Conference on Machine Learning (ICML)},
+  year      = {2025},
+  note      = {Under review}
+}</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-links">
+        <a href="#">Paper</a>
+        <a href="#">Code</a>
+        <a href="#leaderboard">Leaderboard</a>
+        <a href="#citation">Citation</a>
+      </div>
+      <p>ReasonBENCH &copy; 2025. Built for reliable LLM reasoning evaluation.</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
